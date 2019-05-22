@@ -14,7 +14,9 @@ defmodule MooseApi.Contacts.Contact do
     field :website, :string
     field :zipcode, :string
     field :company_id, :id
+
     belongs_to :user, MooseApi.Accounts.User
+    has_many :sales_invoice, MooseApi.Journals.SalesInvoice
     
 
     timestamps()

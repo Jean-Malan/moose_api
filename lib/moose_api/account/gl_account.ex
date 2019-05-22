@@ -5,11 +5,10 @@ defmodule MooseApi.Account.GlAccount do
 
   schema "gl_account" do
     field :account_code, :string
-    field :account_type, :integer
+    field :account_type, AccountType
     field :title, :string
-    field :user_id, :id
     field :company_id, :id
-    # belongs_to :user, MooseApi.Accounts.User
+    belongs_to :user, MooseApi.Accounts.User
 
     timestamps()
   end
@@ -17,7 +16,7 @@ defmodule MooseApi.Account.GlAccount do
   @doc false
   def changeset(gl_account, attrs) do
     gl_account
-    |> cast(attrs, [:title, :account_code, :account_type])
+    |> cast(attrs, [:title, :account_code, :account_type, :user_id])
     |> validate_required([:title, :account_code, :account_type])
   end
 end

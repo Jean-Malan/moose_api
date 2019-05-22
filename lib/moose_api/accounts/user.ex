@@ -7,8 +7,8 @@ defmodule MooseApi.Accounts.User do
     field :encrypted_password, :string
     field :password, :string, virtual: true
 
-    # has_many :contact, MooseApi.Contacts.Contact
-
+    has_many :contact, MooseApi.Contacts.Contact
+    has_many :sales_invoice, MooseApi.Journals.SalesInvoice
 
     timestamps()
   end

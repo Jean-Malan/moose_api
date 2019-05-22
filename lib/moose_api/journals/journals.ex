@@ -7,6 +7,7 @@ defmodule MooseApi.Journals do
   alias MooseApi.Repo
 
   alias MooseApi.Journals.SalesInvoice
+  alias MooseApi.Journals.SalesEntries
 
   @doc """
   Returns the list of sales_invoice.
@@ -17,8 +18,53 @@ defmodule MooseApi.Journals do
       [%SalesInvoice{}, ...]
 
   """
-  def list_sales_invoice do
-    Repo.all(SalesInvoice)
+  def list_sales_invoice(id) do
+
+   sales_invoice =
+    from sales_invoice in SalesInvoice, where: sales_invoice.user_id == ^id
+    # left_join: sales_entries in assoc(sales_invoice, :sales_entries)
+    
+    sales_invoice
+    |> Repo.all
+    |> Repo.preload(:sales_entries)
+    |> Repo.preload(:contact)
+    |> Enum.map( fn sale -> 
+
+      contact = Enum.join([sale.contact.first_name , sale.contact.last_name ], " ")
+
+      gross_amount =
+        if length(sale.sales_entries) > 0 do
+          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.gross_price end)
+        else
+          0
+        end
+
+      net_price =
+        if length(sale.sales_entries) > 0 do
+          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.net_price end)
+        else
+          0
+        end
+
+      vat_price =
+        if length(sale.sales_entries) > 0 do
+          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.vat_price end)
+        else
+          0
+        end
+
+
+
+        Map.put(sale, 
+                :derived,
+                %{gross_amount: gross_amount,
+                  net_price: net_price,
+                  vat_price: vat_price,
+                  contact: contact})
+      end)
+
+        
+    
   end
 
   @doc """
@@ -115,6 +161,17 @@ defmodule MooseApi.Journals do
   """
   def list_sales_entries do
     Repo.all(SalesEntries)
+  end
+
+
+  def list_sales_entries_by_invoice_id(id) do
+    
+    sales_entries =
+      from sales_entries in SalesEntries, where: sales_entries.sales_invoice_id == ^id
+    
+    sales_entries
+    |> Repo.all
+
   end
 
   @doc """

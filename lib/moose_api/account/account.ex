@@ -113,7 +113,12 @@ defmodule MooseApi.Account do
       [%GlAccount{}, ...]
 
   """
-  def list_gl_account do
+  def list_gl_account(id) do
+    gl_accounts = from gla in GlAccount, where: gla.user_id == ^id
+
+    gl_accounts
+    |> Repo.all
+    |> Repo.preload(:user)
     Repo.all(GlAccount)
   end
 

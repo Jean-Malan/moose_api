@@ -3,7 +3,7 @@ defmodule MooseApiWeb.Router do
 
   pipeline :api do
     plug CORSPlug, origin: "*"
-    plug :accepts, ["json"]
+    plug :accepts, ["json", "json-api"]
   end
 
   pipeline :auth do
@@ -27,11 +27,19 @@ defmodule MooseApiWeb.Router do
     resources "/product", ProductController, except: [:new, :edit]
     resources "/contact", ContactController, except: [:new, :edit]
     options "/contact", ContactController, except: [:new, :edit]
-    post "/contacts", ContactController, :create
-    delete "/contacts", ContactController, :delete
+    post "/contact", ContactController, :create
+    patch "/contact", ContactController, :update
+    delete "/contact", ContactController, :delete
     resources "/bank_account", BankAccountController, except: [:new, :edit]
+    post "/gl_accounts", GlAccountController, :create
+    patch "/gl_accounts", GlAccountController, :update
+    delete "/gl_accounts", GlAccountController, :delete
+    get "/gl_accounts", GlAccountController, :index
+    options "/gl_accounts", GlAccountController, except: [:new, :edit]
     resources "/gl_account", GlAccountController, except: [:new, :edit]
     resources "/sales_invoice", SalesInvoiceController, except: [:new, :edit]
+    delete "/sales_invoice", SalesInvoiceController, :delete
+    options "/sales_invoice", SalesInvoiceController, except: [:new, :edit]
     resources "/sales_entries", SalesEntriesController, except: [:new, :edit]
     resources "/purchase_invoice", PurchaseInvoiceController, except: [:new, :edit]
     resources "/purchases_entries", PurchaseEntriesController, except: [:new, :edit]

@@ -3,8 +3,8 @@ defmodule MooseApi.Repo.Migrations.UpdateUserTable do
 
   def change do
     alter table(:user) do
-      remove :email
-      add :email, :unique
+      # remove :email
+      # add :email, :unique
 
     end
   end

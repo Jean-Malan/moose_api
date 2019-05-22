@@ -14,6 +14,7 @@ defmodule MooseApiWeb.GlAccountView do
     %{id: gl_account.id,
       title: gl_account.title,
       account_code: gl_account.account_code,
+      user_id: gl_account.user_id,
       account_type: gl_account.account_type}
   end
 end

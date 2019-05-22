@@ -3,14 +3,15 @@ defmodule MooseApiWeb.ContactView do
   alias MooseApiWeb.ContactView
   alias MooseApiWeb.UserView
   use JaSerializer.PhoenixView
+  alias MooseApiWeb.SalesInvoiceView
 
 
   attributes [:id, :first_name, :last_name, :address_one, :address_two, :city, :state, :zipcode, :contact_number, :website, :email, :user_id]
-
   has_one(:user, serializer: UserView, identifiers: :always)
+  has_many(:sales_invoice, serializer: SalesInvoiceView, identifiers: :always)
 
-  def render("index.json", %{contact: contact}) do
-    %{data: render_many(contact, ContactView, "contact.json")}
+  def render("index.json-api", %{contact: contact}) do
+    %{data: render_many(contact, ContactView, "contact.json-api")}
   end
 
   def render("show.json", %{contact: contact}) do

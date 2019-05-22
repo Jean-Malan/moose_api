@@ -10,20 +10,22 @@ defmodule MooseApiWeb.ContactController do
 
   def index(conn, _params) do
     contact = Guardian.Plug.current_resource(conn)
-    IO.inspect(Guardian.Plug.current_resource(conn))
     # id = contact.id
-    IO.inspect(contact.id)
     contact_list = Contacts.list_contact(contact.id)
-    IO.inspect("PPPLLLLLLLLLEEEEEEASE")
-    IO.inspect(contact_list)
     |> Repo.preload(:user)
 
     render(conn, "index.json", data: contact_list)
   end
   
 
-  def create(conn, %{"type" => "contacts", "data" => data = %{"attributes" => contact_params}}) do
-    with {:ok, %Contact{} = contact} <- Contacts.create_contact(contact_params) do
+  def create(conn, %{"type" => "contacts", "data" => %{"attributes" => %{"data" => contact_params } }} ) do
+    current_user = Guardian.Plug.current_resource(conn)
+    current_user_id = current_user.id
+
+    params =
+      Map.put(contact_params, "user_id", current_user_id)
+
+    with {:ok, %Contact{} = contact} <- Contacts.create_contact(params) do
       contact =  contact.id
       |> Contacts.get_contact!
       |> Repo.preload(:user)
@@ -42,8 +44,10 @@ defmodule MooseApiWeb.ContactController do
     render(conn, "show.json", data: contact)
   end
 
-  def update(conn, %{"id" => id, "contact" => contact_params}) do
-    contact = Contacts.get_contact!(id)
+  def update(conn, %{ "data" => %{"id" => id, "contact" => contact_params}}) do
+    contact = id
+    |> Contacts.get_contact!
+    |> Repo.preload(:user)
 
     with {:ok, %Contact{} = contact} <- Contacts.update_contact(contact, contact_params) do
       render(conn, "show.json", contact: contact)

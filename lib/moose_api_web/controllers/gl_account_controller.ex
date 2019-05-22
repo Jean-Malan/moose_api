@@ -7,12 +7,22 @@ defmodule MooseApiWeb.GlAccountController do
   action_fallback MooseApiWeb.FallbackController
 
   def index(conn, _params) do
-    gl_account = Account.list_gl_account()
+    current_user = Guardian.Plug.current_resource(conn)
+    
+    gl_account = Account.list_gl_account(current_user.id)
     render(conn, "index.json", gl_account: gl_account)
   end
 
-  def create(conn, %{"gl_account" => gl_account_params}) do
-    with {:ok, %GlAccount{} = gl_account} <- Account.create_gl_account(gl_account_params) do
+  def create(conn, %{"type" => "gl_accounts", "data" => gl_account_params} ) do
+    current_user = Guardian.Plug.current_resource(conn)
+    current_user_id = current_user.id
+
+    IO.inspect(current_user)
+    IO.inspect(current_user_id)
+    params =
+      Map.put(gl_account_params, "user_id", current_user_id)
+
+    with {:ok, %GlAccount{} = gl_account} <- Account.create_gl_account(params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", gl_account_path(conn, :show, gl_account))

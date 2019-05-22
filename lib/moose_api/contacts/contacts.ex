@@ -20,10 +20,12 @@ defmodule MooseApi.Contacts do
   """
   def list_contact(id) do
 
-    contact = from contact in Contact, where: contact.user_id == 24
+    contact = from contact in Contact, where: contact.user_id == ^id
+    
     contact
     |> Repo.all
     |> Repo.preload(:user)
+    |> Repo.preload(:sales_invoice)
       
   end
 
