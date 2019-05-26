@@ -41,6 +41,7 @@ defmodule MooseApiWeb.Router do
     delete "/sales_invoice", SalesInvoiceController, :delete
     options "/sales_invoice", SalesInvoiceController, except: [:new, :edit]
     resources "/sales_entries", SalesEntriesController, except: [:new, :edit]
+    options "/sales_entries", SalesEntriesController, except: [:new, :edit]
     resources "/purchase_invoice", PurchaseInvoiceController, except: [:new, :edit]
     resources "/purchases_entries", PurchaseEntriesController, except: [:new, :edit]
     resources "/general_journal", GeneralJournalController, except: [:new, :edit]

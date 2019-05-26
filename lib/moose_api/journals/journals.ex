@@ -34,26 +34,24 @@ defmodule MooseApi.Journals do
 
       gross_amount =
         if length(sale.sales_entries) > 0 do
-          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.gross_price end)
+          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + (s.gross_price * s.quantity) end)
         else
           0
         end
 
       net_price =
         if length(sale.sales_entries) > 0 do
-          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.net_price end)
+          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + (s.net_price * s.quantity) end)
         else
           0
         end
 
       vat_price =
         if length(sale.sales_entries) > 0 do
-          Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + s.vat_price end)
+         Float.round( Enum.reduce(sale.sales_entries, 0, fn s, acc -> acc + (Float.round(s.vat_price,2) * s.quantity) end), 3)
         else
           0
         end
-
-
 
         Map.put(sale, 
                 :derived,
@@ -63,8 +61,6 @@ defmodule MooseApi.Journals do
                   contact: contact})
       end)
 
-        
-    
   end
 
   @doc """
@@ -203,8 +199,15 @@ defmodule MooseApi.Journals do
 
   """
   def create_sales_entries(attrs \\ %{}) do
+    {gross, ""} = Float.parse(attrs["gross_price"])
+    vat_price =  if attrs["vat_type"] == "vat" do gross - (gross / 1.15) else 0 end
+    net_price =  gross - vat_price
+    new_values = %{"vat_price" => vat_price, "net_price" => net_price}
+    final_values = Map.merge(attrs, new_values)
+
+    IO.inspect(gross)
     %SalesEntries{}
-    |> SalesEntries.changeset(attrs)
+    |> SalesEntries.changeset(final_values)
     |> Repo.insert()
   end
 

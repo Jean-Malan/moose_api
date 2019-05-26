@@ -2,7 +2,7 @@ defmodule MooseApi.Journals.SalesEntries do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Poison.Encoder, only: [ :description, :gross_price, :net_price, :quantity, :vat_price, :vat_type, :company_id, :gl_account_id, :product_id]}
+  @derive {Poison.Encoder, only: [ :id, :description, :gross_price, :net_price, :quantity, :vat_price, :vat_type, :company_id, :gl_account_id, :product_id]}
   
   schema "sales_entries" do
     field :description, :string
@@ -25,8 +25,10 @@ defmodule MooseApi.Journals.SalesEntries do
 
   @doc false
   def changeset(sales_entries, attrs) do
+    IO.inspect("EEEEEEEEENNNNNNNTRIIES")
+    IO.inspect(attrs)
     sales_entries
     |> cast(attrs, [:description, :gross_price, :net_price, :quantity, :vat_price, :vat_type, :sales_invoice_id, :user_id])
-    |> validate_required([:description, :gross_price, :net_price, :quantity, :vat_price, :vat_type])
+    |> validate_required([:description, :gross_price, :quantity, :vat_type])
   end
 end

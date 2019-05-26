@@ -5,8 +5,8 @@ defmodule MooseApiWeb.SalesEntriesView do
   use JaSerializer.PhoenixView
 
 
-  attributes [:description, :gross_price, :net_price, :quantity, :vat_price, :vat_type]
-  has_one :user, serializer: MooseApi.Accounts.User
+  attributes [:id, :description, :gross_price, :net_price, :quantity, :vat_price, :vat_type]
+  # has_one :user, serializer: MooseApi.Accounts.User
   has_one :sales_invoice, serializer: SalesInvoiceView
 
   def render("index.json", %{sales_entries: sales_entries}) do
